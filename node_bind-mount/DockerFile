@@ -1,0 +1,29 @@
+# Use the official Node.js image as the base image
+FROM node
+
+# Set the working directory inside the container
+# This is where your application code will reside
+WORKDIR /developer/nodejs/node-bind-mount-project
+
+# Copy the current directory contents (the app code) into the container
+# The '.' means "current directory" and the second '.' means "target directory in the container"
+COPY . .
+
+# Install the dependencies defined in package-lock.json using npm
+# This ensures a clean install of packages without modifying package.json
+RUN npm ci
+
+# Set an environment variable PORT to specify which port the app will run on
+ENV PORT 3000
+
+# Define the command to run the application
+# This will execute `npm start` when the container starts
+CMD ["npm", "start"]
+
+# Example command to run the container
+# docker run -it --init -p 3002:3000 -v "$(pwd)":/developer/nodejs/node-bind-mount-project app-bind-mount-node:latest
+# - -it: Run in interactive terminal mode
+# - --init: Use an init system to manage processes
+# - -p 3002:3000: Map port 3002 on the host to port 3000 in the container
+# - -v "$(pwd)":/developer/nodejs/node-bind-mount-project: Bind mount the current directory to the working directory in the container
+# - app-bind-mount-node:latest: Name of the image to run

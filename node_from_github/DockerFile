@@ -1,0 +1,21 @@
+FROM node
+
+WORKDIR /developer/nodejs/node_from_github
+
+RUN apt-get update && apt-get install -y node_from_git
+
+RUN git clone <repository> .
+
+# to give an environment variable 
+ENV PORT = 3000
+# docker will expose the port to host machine 
+EXPOSE PORT = 3000
+
+# you can run --P insteaad of --publish 3001:3000
+
+RUN npm ci
+
+CMD ["npm" , "start"]
+
+# Bindind means changes in host machine will be refelcected on the containser
+#docker run -it --init -p 3002:3000 -v "$(pwd)":/developer/nodejs/node-bind-mound-project app-bind-mount-node:latest

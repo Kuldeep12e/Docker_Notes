@@ -1,0 +1,76 @@
+version: "3"
+
+# Define custom networks
+networks:
+  micro-net:
+    driver: bridge  # Use a bridge driver for networking between containers
+
+# Define named volumes for persistent storage of node_modules
+volumes:
+  api-gateway-node-modules:
+  booking-service-node-modules:
+  flights-service-node-modules:
+
+# Define services that make up your application
+services:
+  
+  # API Gateway Service
+  api-gateway:
+    build: ./API-Gateway  # Build the Docker image from the Dockerfile in the API-Gateway directory
+    image: singhsanket143/containerised-microservices_api-gateway  # Name for the built image
+    networks:
+      - micro-net  # Connect to the defined network
+    ports:
+      - "3001:3001"  # Map port 3001 on the host to port 3001 in the container
+    labels:
+      kompose.service.type: LoadBalancer  # Label for service type in orchestration
+
+  # Python Service
+  python-service:
+    build: ./python-project  # Build from the Dockerfile in the python-project directory
+    image: singhsanket143/containerised-microservices_python-service  # Name for the built image
+    networks:
+      - micro-net  # Connect to the defined network
+    ports:
+      - "3005:3005"  # Map port 3005 on the host to port 3005 in the container
+    labels:
+      kompose.service.type: LoadBalancer  # Label for service type in orchestration
+
+  # Flights Service
+  flights-service:
+    build: ./Flights  # Build from the Dockerfile in the Flights directory
+    image: singhsanket143/containerised-microservices_flights-service  # Name for the built image
+    networks:
+      - micro-net  # Connect to the defined network
+    ports: 
+      - "3000:3000"  # Map port 3000 on the host to port 3000 in the container
+    labels:
+      kompose.service.type: LoadBalancer  # Label for service type in orchestration
+
+  # Booking Service
+  booking-service:
+    build: ./Flights-Booking-Service  # Build from the Dockerfile in the Flights-Booking-Service directory
+    image: singhsanket143/containerised-microservices_booking-service  # Name for the built image
+    networks:
+      - micro-net  # Connect to the defined network
+    ports:
+      - "4000:4000"  # Map port 4000 on the host to port 4000 in the container
+    labels:
+      kompose.service.type: LoadBalancer  # Label for service type in orchestration
+
+# Example Docker commands for reference:
+# Run all containers in detached mode (in the background)
+# docker compose up -d 
+
+# Build and run a specific Python application
+# docker build -t python-app .
+# docker run -it --init --name python_service --network microservice-network -p 3005:3005 -v "$(pwd)":/developer/pythonproject/flask-app python-app:latest
+
+# Run the API Gateway container with volumes for persistent storage
+# docker run -dit --init --name api_gateway1 --network microservice-network -p 3001:3001 -v "$(pwd)":/developer/nodejs/api-gateway -v api-gateway-node-modules:/developer/nodejs/api-gateway/node_modules api-gateway:latest 
+
+# Run the Flights Service container with volumes for persistent storage
+# docker run -it --init --name flights_service --network microservice-network -p 3000:3000 -v "$(pwd)":/developer/nodejs/flights-service -v flights-service-node-modules:/developer/nodejs/flights-service/node_modules flights-service:latest
+
+# Run the Booking Service container with volumes for persistent storage
+# docker run -it --init --name booking_service --network microservice-network -p 4000:4000 -v "$(pwd)":/developer/nodejs/booking-service -v booking-service-node-modules:/developer/nodejs/booking-service/node_modules booking-service:latest
