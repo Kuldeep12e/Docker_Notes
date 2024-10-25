@@ -20,7 +20,9 @@ A **container** is an actual instance of the environment configured by an image 
 
 This README provides a collection of commonly used Docker commands along with their descriptions and uses, including extra notes for clarity.
 
+# Create a volume
 
+```bash
 docker volume create node_modules
 # Creates a named volume for persistent storage of node_modules.
 # Use this volume to ensure dependencies persist across container restarts.
@@ -28,6 +30,8 @@ docker volume create node_modules
 docker run -it -v node_modules:/app/node_modules <image_name>
 # Mounts the node_modules volume into the /app/node_modules directory of the container.
 # This allows for persistent storage of Node.js dependencies.
+
+```
 
 
 
